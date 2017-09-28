@@ -1,0 +1,9 @@
+#OS junk files
+[Tt]humbs.db
+*.DS_Store
+
+
+checkpoints/SAGAN/*
+result/*
+dicoms/*
+datasets/
