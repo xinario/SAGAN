@@ -5,8 +5,8 @@ import errno
 import numpy as np
 import dicom
 
-
 def mkdir_p(path):
+#function  by @tzot from stackoverflow
 	try:
 		os.makedirs(path)
 	except OSError as exc:  # Python >2.5
@@ -15,9 +15,11 @@ def mkdir_p(path):
 		else:
 			raise
 
+
+
 root = './dicoms'
 
-output_root = './test'
+output_root = './datasets/experiment/test'
 
 mkdir_p(output_root)
 

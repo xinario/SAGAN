@@ -4,6 +4,6 @@
 
 
 checkpoints/SAGAN/*
-result/*
+results/*
 dicoms/*
 datasets/

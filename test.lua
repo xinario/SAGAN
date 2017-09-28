@@ -32,7 +32,7 @@ opt = {
     serial_batch_iter = 1,    -- iter into serial image list
     cudnn = 1,                -- set to 0 to not use cudnn (untested)
     checkpoints_dir = './checkpoints', -- loads models from here
-    results_dir='./result/',          -- saves results here
+    results_dir='./results/',          -- saves results here
     which_epoch = 'latest',            -- which epoch to test? set to 'latest' to use latest cached model
     norm='batch'
 }

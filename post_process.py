@@ -6,8 +6,8 @@ import numpy as np
 
 opt = {
 	'name': 'SAGAN',
-	'window_type': 'abdomen', #lung, abdomen, bone, none
-	'results_dir': './result/',
+	'window_type': 'lung', #lung, abdomen, bone, none
+	'results_dir': './results/',
 	'which_epoch': 'latest'
 
 }
