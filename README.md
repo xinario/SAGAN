@@ -1,4 +1,4 @@
-## Sharpness-aware Low Dose CT Denoising Using Conditional Generative Adversarial Network
+## SAGAN
 This repo provides the trained denoising model and testing code for low dose CT denoising as described in our [paper](https://arxiv.org/abs/1708.06453).
 Here are some randomly picked denoised results on low dose CTs from this [kaggle challenge](https://www.kaggle.com/c/data-science-bowl-2017/data). 
 <img src="imgs/sample.jpg" width="900px"/>
