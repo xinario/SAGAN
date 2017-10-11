@@ -4,7 +4,7 @@ Here are some randomly picked denoised results on low dose CTs from this [kaggle
 <img src="imgs/sample.jpg" width="900px"/>
 
 ## How to use
-
+To better use this repo, please make sure the dose level of the LDCTs are larger than 0.71 mSv.
 ### Prerequistites
 - Linux or OSX
 - NVIDIA GPU
@@ -25,11 +25,11 @@ cd SAGAN
 
 - Prepare your test set with the provided python script
 ```bash
-#make a directory inside the root SAGAN folder
+#make a directory inside the root SAGAN folder to store your raw dicoms, e.g. ./dicoms
 mkdir dicoms
 #then put all your low dose CT images of dicom format into this folder and run
-python pre_process.py
-#all your test images would now be saved as uint16 png format inside folder datasets/experiment/test
+python pre_process.py -s 1 -i ./dicoms -o ./datasets/experiment/test
+#all your test images would now be saved as uint16 png format inside folder ./datasets/experiment/test. Arguement `-s 1` is to ensure the output images are stored in sequence.
 #note: in order to use the python script, make sure you have the follwing packages installed
 #opencv, pydicom, numpy, h5py
 ```
@@ -38,9 +38,9 @@ python pre_process.py
 DATA_ROOT=./datasets/experiment name=SAGAN which_direction=AtoB phase=test th test.lua
 #the results are saved in result/SAGAN/latest_net_G_test/result.h5
 ```
-- Display the result with a specific window, e.g. abdomen. Window type can be changed in `opt` in post_process.py
+- Display the result with a specific window, e.g. abdomen. Window type can be changed to 'abdomen', 'bone' or 'none'
 ```bash
-python post_process.py
+python post_process.py -w 'lung'
 ```
 Now you can view the result by open the html file:result/SAGAN/latest_net_G_test/index.html
 

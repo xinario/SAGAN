@@ -3,14 +3,7 @@ import h5py
 import os
 import errno
 import numpy as np
-
-opt = {
-	'name': 'SAGAN',
-	'window_type': 'lung', #lung, abdomen, bone, none
-	'results_dir': './results/',
-	'which_epoch': 'latest'
-
-}
+import argparse
 
 
 def mkdir_p(path):
@@ -56,6 +49,21 @@ def transfer2window(input, window_type):
 
 
 
+parser = argparse.ArgumentParser(description='extract images from .h5 file')
+parser.add_argument('-w','--window', help='window to display the image', required=True)
+
+args = vars(parser.parse_args())
+
+
+opt = {
+	'name': 'SAGAN',
+	'window_type': args['window'], #lung, abdomen, bone, none
+	'results_dir': './results',
+	'which_epoch': 'latest'
+
+}
+
+
 result_root = os.path.join(opt['results_dir'], opt['name'], opt['which_epoch'] + '_net_G_test')
 
 result_file_name = os.path.join(result_root,  'result.h5' );
@@ -74,32 +82,38 @@ mkdir_p(target_root)
 f = h5py.File(result_file_name, 'r')
 
 
+
+
+for i in xrange(len(f.keys())):
+	group_key = f.keys()[i]
+	name_lists = group_key.split('_')
+
+	output_type = name_lists[1]
+	filename = name_lists[2]
+
+	img = np.array(f.get(group_key))
+	img = img/22*65535
+	img = np.transpose(img.astype(np.uint16), (1,2,0))
+
+	if opt['window_type'] != 'none':
+		img = transfer2window(img, opt['window_type'])
+
+
+	if output_type == 'output':
+		cv2.imwrite(os.path.join(output_root, filename), img)
+	elif output_type == 'target':
+		cv2.imwrite(os.path.join(target_root, filename), img)
+	elif output_type == 'input':
+		cv2.imwrite(os.path.join(input_root, filename), img)
+
+
 with open(index_file, 'w') as the_file:
 	the_file.write('<table style="text-align:center;">\n')
 
-	for i in xrange(len(f.keys())):
+	for i in xrange(len(f.keys())/3):
 		group_key = f.keys()[i]
 		name_lists = group_key.split('_')
-
-		output_type = name_lists[1]
 		filename = name_lists[2]
-
-		img = np.array(f.get(group_key))
-		img = img/22*65535
-		img = np.transpose(img.astype(np.uint16), (1,2,0))
-
-		if opt['window_type'] != 'none':
-			img = transfer2window(img, opt['window_type'])
-
-
-		if output_type == 'output':
-			cv2.imwrite(os.path.join(output_root, filename), img)
-		elif output_type == 'target':
-			cv2.imwrite(os.path.join(target_root, filename), img)
-		elif output_type == 'input':
-			cv2.imwrite(os.path.join(input_root, filename), img)
-
-
 
 		the_file.write('<tr><td>Image #</td><td>input</td><td>target</td><td>sagan</td></tr>\n')
 		the_file.write('<tr>')
