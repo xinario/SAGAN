@@ -1,5 +1,10 @@
 ## SAGAN
-This repo provides the trained denoising model and testing code for low dose CT denoising as described in our [paper](https://arxiv.org/abs/1708.06453).
+
+#### Update 2018.03.27
+The piglet dataset we used in the publication is now open for download! Please find the link in my [personal webpage](http://homepage.usask.ca/~xiy525/). (Note: for non-commercial use only)
+
+##
+This repo provides the trained denoising model and testing code for low dose CT denoising as described in our [paper](https://link.springer.com/article/10.1007/s10278-018-0056-0).
 Here are some randomly picked denoised results on low dose CTs from this [kaggle challenge](https://www.kaggle.com/c/data-science-bowl-2017/data). 
 <img src="imgs/sample.jpg" width="900px"/>
 
@@ -45,14 +50,9 @@ python post_process.py -w 'lung'
 Now you can view the result by open the html file:result/SAGAN/latest_net_G_test/index.html
 
 ### Citations
-If you find it useful and are using the code/model provoided here in a publication, please cite our paper:
+If you find it useful and are using the code/model/dataset provoided here in a publication, please cite our paper:
 
-	@article{yi2017sharpness,
-	  title={Sharpness-aware Low dose CT denoising using conditional generative adversarial network},
-	  author={Yi, Xin and Babyn, Paul},
-	  journal={arXiv preprint arXiv:1708.06453},
-	  year={2017}
-	}
+Yi, X. & Babyn, P. J Digit Imaging (2018). https://doi.org/10.1007/s10278-018-0056-0
 
 
 
