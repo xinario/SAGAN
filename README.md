@@ -50,7 +50,7 @@ python post_process.py -w 'lung'
 Now you can view the result by open the html file:result/SAGAN/latest_net_G_test/index.html
 
 ### Citations
-If you find it useful and are using the code/model/dataset provoided here in a publication, please cite our paper:
+If you find it useful and are using the code/model/dataset provided here in a publication, please cite our paper:
 
 Yi, X. & Babyn, P. J Digit Imaging (2018). https://doi.org/10.1007/s10278-018-0056-0
 
