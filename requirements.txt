@@ -1,0 +1,5 @@
+dominate
+pydicom
+opencv-python
+tqdm
+h5py

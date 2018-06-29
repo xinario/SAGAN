@@ -1,19 +1,15 @@
 import cv2
 import h5py
 import os
-import errno
 import numpy as np
 import argparse
+from tqdm import tqdm
+from util import HTML
 
 
 def mkdir_p(path):
-	try:
-		os.makedirs(path)
-	except OSError as exc:  # Python >2.5
-		if exc.errno == errno.EEXIST and os.path.isdir(path):
-			pass
-		else:
-			raise
+    if not os.path.exists(path):
+        os.makedirs(path)
 
 
 
@@ -27,7 +23,8 @@ def get_window_size(window_type):
 	elif window_type == 'bone':
 		center = 300
 		width = 2000
-
+	else:
+		raise ValueError("window type not recognized, expect 'lung|abdomen|bone") 
 	return center, width
 	
 
@@ -50,87 +47,77 @@ def transfer2window(input, window_type):
 
 
 parser = argparse.ArgumentParser(description='extract images from .h5 file')
-parser.add_argument('-w','--window', help='window to display the image', required=True)
-
-args = vars(parser.parse_args())
-
-
-opt = {
-	'name': 'SAGAN',
-	'window_type': args['window'], #lung, abdomen, bone, none
-	'results_dir': './results',
-	'which_epoch': 'latest'
-
-}
+parser.add_argument('--window', help='window to display the image', required=True)
+parser.add_argument('--results_dir', default='./results', help='folder of the results')
+parser.add_argument('--name', type=str, default='SAGAN', help='experiment_name')
+parser.add_argument('--which_epoch', type=str, default='latest', help='which epoch to use for evaluation')
+parser.add_argument('--web_dir', help='root path to put the generated html file', default='.')
 
 
-result_root = os.path.join(opt['results_dir'], opt['name'], opt['which_epoch'] + '_net_G_test')
-
-result_file_name = os.path.join(result_root,  'result.h5' );
-output_root = os.path.join(result_root,  'output' );
-input_root = os.path.join(result_root,  'input' );
-target_root = os.path.join(result_root,  'target' );
-
-index_file = os.path.join(result_root,'index.html')
-
-mkdir_p(output_root)
-mkdir_p(input_root)
-mkdir_p(target_root)
+opt = parser.parse_args()
 
 
 
-f = h5py.File(result_file_name, 'r')
+def post_process(input_root, target_root, output_root, opt):
+	print('start post-processing ...')
+	f = h5py.File(result_file_name, 'r')
+	folder_dic = {'input': input_root, 'output': output_root, 'target': target_root }
+
+	for i in tqdm(range(len(f.keys()))):
+		group_key = list(f.keys())[i]
+		name_lists = group_key.split('_')
+
+		output_type = name_lists[1]
+		filename = name_lists[2]
+
+		img = np.array(f.get(group_key))
+		img = img/22*65535
+		img = np.transpose(img.astype(np.uint16), (1,2,0))
+
+		if opt.window != 'none':
+			img = transfer2window(img, opt.window)
+
+
+		cv2.imwrite(os.path.join(folder_dic[output_type], filename), img)
 
 
 
-
-for i in xrange(len(f.keys())):
-	group_key = f.keys()[i]
-	name_lists = group_key.split('_')
-
-	output_type = name_lists[1]
-	filename = name_lists[2]
-
-	img = np.array(f.get(group_key))
-	img = img/22*65535
-	img = np.transpose(img.astype(np.uint16), (1,2,0))
-
-	if opt['window_type'] != 'none':
-		img = transfer2window(img, opt['window_type'])
-
-
-	if output_type == 'output':
-		cv2.imwrite(os.path.join(output_root, filename), img)
-	elif output_type == 'target':
-		cv2.imwrite(os.path.join(target_root, filename), img)
-	elif output_type == 'input':
-		cv2.imwrite(os.path.join(input_root, filename), img)
-
-
-with open(index_file, 'w') as the_file:
-	the_file.write('<table style="text-align:center;">\n')
-
-	for i in xrange(len(f.keys())/3):
-		group_key = f.keys()[i]
+	webpage = HTML(opt.web_dir, 'Experiment name = SAGAN', reflesh=1)
+	webpage.add_header('SAGAN test results {} window'.format(opt.window))
+	ims, txts, links = [], [], []
+	for i in range(len(f.keys())):
+		group_key = list(f.keys())[i]
 		name_lists = group_key.split('_')
 		filename = name_lists[2]
 
-		the_file.write('<tr><td>Image #</td><td>input</td><td>target</td><td>sagan</td></tr>\n')
-		the_file.write('<tr>')
-		the_file.write('<td>' + filename + '</td>')
-		the_file.write('<td><img src="./input/' + filename + '"/></td>')
-		the_file.write('<td><img src="./target/' + filename + '"/></td>')
-		the_file.write('<td><img src="./output/' + filename +'"/></td>')
-		the_file.write('</tr>\n')
+		for key, vp in folder_dic.items():
+			ims.append(os.path.join(vp, filename))
+			txts.append('{}: {}'.format(key, filename))
+			links.append(os.path.join(vp, filename))
+
+		webpage.add_images(ims, txts, links, width=256)
+		ims, txts, links = [], [], []
+
+	webpage.save('index.html')
+
+
+	f.close()
+	print('post-processing finished')
 
 
 
-	the_file.write('</table>')
+if __name__=='__main__':
+	result_root = os.path.join(opt.results_dir, opt.name,  '{}_net_G_test'.format(opt.which_epoch))
 
+	result_file_name = os.path.join(result_root,  'result.h5' );
+	output_root = os.path.join(result_root,  'output' );
+	input_root = os.path.join(result_root,  'input' );
+	target_root = os.path.join(result_root,  'target' );
 
+	index_file = os.path.join(result_root,'index.html')
 
-f.close()
+	mkdir_p(output_root)
+	mkdir_p(input_root)
+	mkdir_p(target_root)
 
-
-
-
+	post_process(input_root, target_root, output_root, opt)

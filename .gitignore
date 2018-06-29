@@ -2,8 +2,9 @@
 [Tt]humbs.db
 *.DS_Store
 
-
+*.pyc
 checkpoints/SAGAN/*
 results/*
 dicoms/*
 datasets/
+

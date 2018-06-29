@@ -13,19 +13,28 @@ To better use this repo, please make sure the dose level of the LDCTs are larger
 ### Prerequistites
 - Linux or OSX
 - NVIDIA GPU
+- Python 3.x
+- Torch7
 
 ### Getting Started
-- Install [torch7](http://torch.ch/docs/getting-started.html#_)
+- Install [Torch7](http://torch.ch/docs/getting-started.html#_)
 - Install torch packages nngraph and hdf5
 ```bash
 luarocks install nngraph
 luarocks install hdf5
+```
+- Install [Python 3.x](https://www.anaconda.com/download/#macos) (recommend using Anaconda)
+- Install python dependencies 
+```
+pip install -r requirements.txt
 ```
 - Clone this repo:
 ```bash
 git clone git@github.com:xinario/SAGAN.git
 cd SAGAN
 ```
+
+
 - Download the pretrained denoising model from [here](https://1drv.ms/u/s!Aj4IQl4ug0_9gj4TTqVW1JhhHG5f) and put it into the "checkpoints/SAGAN" folder
 
 - Prepare your test set with the provided python script
@@ -33,21 +42,20 @@ cd SAGAN
 #make a directory inside the root SAGAN folder to store your raw dicoms, e.g. ./dicoms
 mkdir dicoms
 #then put all your low dose CT images of dicom format into this folder and run
-python pre_process.py -s 1 -i ./dicoms -o ./datasets/experiment/test
-#all your test images would now be saved as uint16 png format inside folder ./datasets/experiment/test. Arguement `-s 1` is to ensure the output images are stored in sequence.
-#note: in order to use the python script, make sure you have the follwing packages installed
-#opencv, pydicom, numpy, h5py
+python pre_process.py  --input ./dicoms --output ./datasets/experiment/test
+#all your test images would now be saved as uint16 png format inside folder ./datasets/experiment/test. 
+
 ```
 - Test the model:
 ```bash
 DATA_ROOT=./datasets/experiment name=SAGAN which_direction=AtoB phase=test th test.lua
-#the results are saved in result/SAGAN/latest_net_G_test/result.h5
+#the results are saved in ./result/SAGAN/latest_net_G_test/result.h5
 ```
 - Display the result with a specific window, e.g. abdomen. Window type can be changed to 'abdomen', 'bone' or 'none'
 ```bash
-python post_process.py -w 'lung'
+python post_process.py --window 'abdomen'
 ```
-Now you can view the result by open the html file:result/SAGAN/latest_net_G_test/index.html
+Now you can view the result by open the html file index.html sitting in the root folder
 
 ### Citations
 If you find it useful and are using the code/model/dataset provided here in a publication, please cite our paper:
