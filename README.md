@@ -1,4 +1,6 @@
 ## SAGAN
+#### Update 2019.01.22
+For those who want to use the piglet dataset for CT denoising research and use this work as a baseline, please refer to this [issue](https://github.com/xinario/SAGAN/issues/8#issue-401978079) for details on how I used it.
 
 #### Update 2018.03.27
 The piglet dataset we used in the publication is now open for download! Please find the link in my [personal webpage](http://homepage.usask.ca/~xiy525/). (Note: for non-commercial use only)
